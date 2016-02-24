@@ -3,11 +3,18 @@
 
 	MMB Libray for MyMicroBridge
 
-	DA AGGIUNGERE LA GESTIONE DEL PARSER
+	Gestione del pasing della risposta separata (come nella libreria Arduino)
+
+	KNOWN BUGS
+		- Manca la gestione degli errori (errori del server e chiamata non effettuata se si cerca di ottenere il risultato prima di run())
+		- SSL
 */
 
 	
 	class MMB {
+
+		//constanti
+		const MMB_API_HOSTNAME = "api.mymicrobridge.com";
 
 		//dati privati
 		private $accountName;
@@ -18,16 +25,22 @@
 		private $uriTemplateParameters;
 		private $xWWWFormUrlEncodedParameters;
 
+		//risultato dell'esecuzione
+		private $result;
+
 
 		//costruttore della classe
 		public function __construct() {
 
 			//inizializzo le variabili
-			$accountName = "";
-			$apiName = "";
-			$queryStringParameters = array();
-			$uriTemplateParameters = array();
-			$xWWWFormUrlEncodedParameters = array();
+			$this->accountName = "";
+			$this->apiName = "";
+			$this->queryStringParameters = array();
+			$this->uriTemplateParameters = array();
+			$this->xWWWFormUrlEncodedParameters = array();
+
+			//risultato
+			$this->result = "";
 
 		}
 
@@ -45,7 +58,11 @@
 
 			$url = $this->buildApiURL();
 
-			//echo "URL = " . $url;
+			echo "URL = " . $url . "<br>";
+
+			if ($this->xWWWFormUrlEncodedParameters == array()) { //se non ci sono parametri x-www...
+				$this->result = file_get_contents("http://" . self::MMB_API_HOSTNAME . $url);
+			}
 
 		}
 
@@ -74,6 +91,10 @@
 
 		}
 
+		public function read() {
+			return $this->result;
+		}
+
 
 		//---PRIVATE
 		private function buildApiURL() {
@@ -92,9 +113,7 @@
 				$url .= "/?"; //inserisco il divisore
 
 				foreach ($this->queryStringParameters as $parameter) {
-					
-					$url .= urlencode($parameter['offset']) . "=" . urlencode($parameter['value']) . "&";
-
+					$url .= urlencode($parameter['offset']) . "=" . urlencode($parameter['value']) . "&"; //concateno il parametro
 				}
 
 				$url = substr($url, 0, -1); //elimino l'ultimo /

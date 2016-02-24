@@ -31,11 +31,10 @@
 	$mmb->setApiName(MMB_API_NAME);
 
 	//fill mmb objcet with parameters
-	$mmb->addQueryStringParameter("key", "San donà di piave");
-	$mmb->addQueryStringParameter("key2", "value2");
-
-	$mmb->addUriTemplateParameter("uri1");
-	$mmb->addUriTemplateParameter("uri2");
+	$mmb->addQueryStringParameter("city", "Ceggia");
 
 	//execute mmb
 	$mmb->run();
+
+
+	echo $mmb->read();
