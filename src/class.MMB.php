@@ -58,7 +58,7 @@
 
 			$url = $this->buildApiURL();
 
-			echo "URL = " . $url . "<br>";
+			//echo "URL = " . $url . "<br>";
 
 			if ($this->xWWWFormUrlEncodedParameters == array()) { //se non ci sono parametri x-www...
 				$this->result = file_get_contents("http://" . self::MMB_API_HOSTNAME . $url);
