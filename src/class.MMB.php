@@ -7,10 +7,13 @@
 
 	KNOWN BUGS
 		- Manca la gestione degli errori (errori del server e chiamata non effettuata se si cerca di ottenere il risultato prima di run())
-		- SSL
 */
 
-	
+	namespace MMB;
+
+	//classe utilizzata come client HTTP
+	include('httpful.phar');
+
 	class MMB {
 
 		//constanti
@@ -19,6 +22,9 @@
 		//dati privati
 		private $accountName;
 		private $apiName;
+
+		//ssl
+		private $useSSL;
 
 		//array per contenere i parametri
 		private $queryStringParameters;
@@ -35,6 +41,9 @@
 			//inizializzo le variabili
 			$this->accountName = "";
 			$this->apiName = "";
+
+			$this->useSSL = false;
+
 			$this->queryStringParameters = array();
 			$this->uriTemplateParameters = array();
 			$this->xWWWFormUrlEncodedParameters = array();
@@ -53,16 +62,40 @@
 			$this->apiName = "" . $apiName; //converto in stringa apiName e lo salvo
 		}
 
+		public function useSSL($ssl = false) {
+			$this->useSSL = $ssl;
+		}
+
 		//---EXECUTE
 		public function run() { //execute API (make HTTP request)
 
-			$url = $this->buildApiURL();
+			$url = self::MMB_API_HOSTNAME . $this->buildApiURL();
 
-			//echo "URL = " . $url . "<br>";
+			//body request
+			$body = $this->buildApiBody();
 
-			if ($this->xWWWFormUrlEncodedParameters == array()) { //se non ci sono parametri x-www...
-				$this->result = file_get_contents("http://" . self::MMB_API_HOSTNAME . $url);
+			//verifico se usare ssl
+			if ($this->useSSL) {
+				$url = "https://" . $url;
+			} else {
+				$url = "http://" . $url;
 			}
+
+			if ($body != "") { //POST
+				//eseguo la chiamata
+				$response = \Httpful\Request::post($url)
+							->body($body)
+							->sendsType(\Httpful\Mime::FORM)
+							->send();
+
+			} else { //GET
+				//eseguo la chiamata
+				$response = \Httpful\Request::get($url)
+							->send();
+			}
+
+			//salvo il risultato
+			$this->result = $response->raw_body;
 
 		}
 
@@ -84,7 +117,7 @@
 
 		public function addXWWWFormUrlencodedParameter($offset, $value) { //x-www-form-urlencoded
 
-			$xWWWFormUrlEncodedParameters[] = array(
+			$this->xWWWFormUrlEncodedParameters[] = array(
 				'offset' => "" . $offset,
 				'value' => "" . $value
 			);
@@ -116,10 +149,28 @@
 					$url .= urlencode($parameter['offset']) . "=" . urlencode($parameter['value']) . "&"; //concateno il parametro
 				}
 
-				$url = substr($url, 0, -1); //elimino l'ultimo /
+				$url = substr($url, 0, -1); //elimino l'ultimo &
 			}
 
 			return $url;
+
+		}
+
+		//costruisco il body della richiesta
+		private function buildApiBody() {
+
+			//inizializzo body
+			$body = "";
+
+			if ($this->xWWWFormUrlEncodedParameters != array()) {
+				foreach ($this->xWWWFormUrlEncodedParameters as $parameter) {
+					$body .= urlencode($parameter['offset']) . "=" . urlencode($parameter['value']) . "&"; //concateno il parametro
+				}
+
+				$body = substr($body, 0, -1); //elimino l'ultimo &
+			}
+
+			return $body;
 
 		}
 

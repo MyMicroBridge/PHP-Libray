@@ -19,6 +19,10 @@
 	//include MMBJsonParser
 	require_once("../../src/class.MMBJsonParser.php");
 
+	//use statement
+	use \MMB\MMB;
+	use \MMB\MMBJsonParser;
+
 	//---MMB SETTINGS---
 	//MMB account name
 	define("MMB_ACCOUNT_NAME", "alessandro1105");
@@ -33,7 +37,7 @@
 	$mmb->setApiName(MMB_API_NAME);
 
 	//fill mmb objcet with parameters
-	$mmb->addQueryStringParameter("city", "Ceggia");
+	$mmb->addXWWWFormUrlencodedParameter("city", "Ceggia");
 
 	//execute mmb
 	$mmb->run();
@@ -45,21 +49,20 @@
 	$result->parseJson();
 
 	if ($result->success()) { //if the response is parsed correctly
-      
-      if ($result->getStatusCode() == MMBJsonParser::MMBJSON_OK) { //if API was successfully executed
 
-      	echo "WEATHER: " . $result->getData("main", "weather") . "<br>";
-      	echo "TEMPERATURE: " . $result->getData("temp", "temp") . " C<br>";
-      	echo "HUMIDITY: " . $result->getData("humid", "other") . " %<br>";
+     	if ($result->getStatusCode() == MMBJsonParser::MMBJSON_OK) { //if API was successfully executed
+
+	      	echo "WEATHER: " . $result->getData("main", "weather") . "<br>";
+	      	echo "TEMPERATURE: " . $result->getData("temp", "temp") . " C<br>";
+	      	echo "HUMIDITY: " . $result->getData("humid", "other") . " %<br>";
         
-      } else {
-        echo "API HAS ENCOUNTERED SOME ERRORS";
-      }
+		} else {
+			echo "API HAS ENCOUNTERED SOME ERRORS";
+		}
  
-      
-    } else {
-      echo "PARSING ERROR";
-    }
+	} else {
+		echo "PARSING ERROR";
+	}
 
 
 

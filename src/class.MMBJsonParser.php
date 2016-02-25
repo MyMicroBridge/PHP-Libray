@@ -9,6 +9,8 @@
 		- Manca la gestione degli errori
 */
 
+	namespace MMB;
+
 	class MMBJsonParser {
 
 		//bad request (1xx)
