@@ -37,7 +37,7 @@
 	$mmb->setApiName(MMB_API_NAME);
 
 	//fill mmb objcet with parameters
-	$mmb->addXWWWFormUrlencodedParameter("city", "Ceggia");
+	$mmb->addQueryStringParameter("city", "Ceggia");
 
 	//execute mmb
 	$mmb->run();

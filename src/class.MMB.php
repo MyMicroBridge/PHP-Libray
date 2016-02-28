@@ -124,6 +124,8 @@
 
 		}
 
+
+		//---READ RESPONSE
 		public function read() {
 			return $this->result;
 		}
@@ -146,7 +148,7 @@
 				$url .= "/?"; //inserisco il divisore
 
 				foreach ($this->queryStringParameters as $parameter) {
-					$url .= urlencode($parameter['offset']) . "=" . urlencode($parameter['value']) . "&"; //concateno il parametro
+					$url .= $parameter['offset'] . "=" . urlencode($parameter['value']) . "&"; //concateno il parametro
 				}
 
 				$url = substr($url, 0, -1); //elimino l'ultimo &
@@ -164,7 +166,7 @@
 
 			if ($this->xWWWFormUrlEncodedParameters != array()) {
 				foreach ($this->xWWWFormUrlEncodedParameters as $parameter) {
-					$body .= urlencode($parameter['offset']) . "=" . urlencode($parameter['value']) . "&"; //concateno il parametro
+					$body .= $parameter['offset'] . "=" . urlencode($parameter['value']) . "&"; //concateno il parametro
 				}
 
 				$body = substr($body, 0, -1); //elimino l'ultimo &
